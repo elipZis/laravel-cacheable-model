@@ -8,12 +8,13 @@ use Illuminate\Database\Connection;
 /**
  * If a model supports general repository caching
  */
-trait Cacheable {
-
+trait Cacheable
+{
     /**
      * @return CacheableQueryBuilder
      */
-    protected function newBaseQueryBuilder() {
+    protected function newBaseQueryBuilder()
+    {
         return new CacheableQueryBuilder(
             $this->getConnection(),
             static::class,
@@ -24,12 +25,13 @@ trait Cacheable {
     /**
      * @return array
      */
-    public function getCacheableProperties(): array {
+    public function getCacheableProperties(): array
+    {
         return [
-            'ttl'        => 300,
-            'prefix'     => 'cacheable',
+            'ttl' => 300,
+            'prefix' => 'cacheable',
             'identifier' => 'id',
-            'logLevel'   => 'error'
+            'logLevel' => 'error',
         ];
     }
 

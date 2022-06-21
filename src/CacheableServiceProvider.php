@@ -11,12 +11,14 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
  * This class is a Package Service Provider
  * More info: https://github.com/spatie/laravel-package-tools
  */
-class CacheableServiceProvider extends PackageServiceProvider {
+class CacheableServiceProvider extends PackageServiceProvider
+{
     /**
      * @param Package $package
      * @return void
      */
-    public function configurePackage(Package $package): void {
+    public function configurePackage(Package $package): void
+    {
         $package->name('laravel-cacheable-model');
     }
 }

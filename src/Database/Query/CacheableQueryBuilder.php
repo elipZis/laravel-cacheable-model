@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Log;
 /**
  *
  */
-class CacheableQueryBuilder extends Builder {
-
+class CacheableQueryBuilder extends Builder
+{
     /**
      * @var string
      */
@@ -54,7 +54,8 @@ class CacheableQueryBuilder extends Builder {
      * @param string     $modelClass
      * @param array      $cacheableProperties
      */
-    public function __construct(Connection $conn, string $modelClass, array $cacheableProperties) {
+    public function __construct(Connection $conn, string $modelClass, array $cacheableProperties)
+    {
         parent::__construct($conn);
         $this->modelClass = $modelClass;
         $this->cacheableProperties = $cacheableProperties;
@@ -69,8 +70,10 @@ class CacheableQueryBuilder extends Builder {
     /**
      * @return $this
      */
-    public function withoutCache(): static {
+    public function withoutCache(): static
+    {
         $this->enabled = false;
+
         return $this;
     }
 
@@ -82,8 +85,9 @@ class CacheableQueryBuilder extends Builder {
      *
      * @return array
      */
-    protected function runSelect() {
-        if(!$this->enabled) {
+    protected function runSelect()
+    {
+        if (! $this->enabled) {
             return parent::runSelect();
         }
 
@@ -91,8 +95,9 @@ class CacheableQueryBuilder extends Builder {
         $cacheKey = $this->getCacheKey();
 
         //If cached, return
-        if(Cache::has($cacheKey)) {
+        if (Cache::has($cacheKey)) {
             $this->log("Found cache entry for {$cacheKey}");
+
             return Cache::get($cacheKey);
         }
 
@@ -102,19 +107,18 @@ class CacheableQueryBuilder extends Builder {
         //Cache before return by class (and optional identifiers)
         $modelClasses = $this->getIdentifiableModelClasses($this->getIdentifiableValue());
         //Are tags supported? Makes life easier!
-        if(Cache::getStore() instanceof TaggableStore) {
+        if (Cache::getStore() instanceof TaggableStore) {
             $this->log("Using taggable store to cache value of {$cacheKey} for {$this->ttl} ttl");
             Cache::tags($modelClasses)->put($cacheKey, $retVal, $this->ttl);
-
         } else {
             $this->log("Using cache to store value of {$cacheKey} for {$this->ttl} ttl");
             Cache::put($cacheKey, $retVal, $this->ttl);
 
             //Cache the query if not, for purging purposes
-            foreach($modelClasses as $modelClass) {
+            foreach ($modelClasses as $modelClass) {
                 $modelCacheKey = $this->getModelCacheKey($modelClass);
                 $queries = [];
-                if(Cache::has($modelCacheKey)) {
+                if (Cache::has($modelCacheKey)) {
                     $queries = Cache::get($modelCacheKey);
                 }
                 $queries[] = $cacheKey;
@@ -128,29 +132,33 @@ class CacheableQueryBuilder extends Builder {
     /**
      * @return string[]
      */
-    protected function getIdentifiableModelClasses(mixed $value = null): array {
+    protected function getIdentifiableModelClasses(mixed $value = null): array
+    {
         $retVals = [$this->modelClass];
-        if($value) {
-            if(is_array($value)) {
-                foreach($value as $v) {
+        if ($value) {
+            if (is_array($value)) {
+                foreach ($value as $v) {
                     $retVals[] = "{$this->modelClass}#{$v}";
                 }
             } else {
                 $retVals[] = "{$this->modelClass}#{$value}";
             }
         }
+
         return $retVals;
     }
 
     /**
      * @return mixed|null
      */
-    protected function getIdentifiableValue(): mixed {
-        foreach($this->wheres as $where) {
-            if($where['column'] === $this->modelIdentifier) {
+    protected function getIdentifiableValue(): mixed
+    {
+        foreach ($this->wheres as $where) {
+            if ($where['column'] === $this->modelIdentifier) {
                 return $where['value'];
             }
         }
+
         return null;
     }
 
@@ -159,12 +167,14 @@ class CacheableQueryBuilder extends Builder {
      *
      * @return bool
      */
-    protected function isIdentifiableQuery(): bool {
-        foreach($this->wheres as $where) {
-            if($where['column'] === $this->modelIdentifier) {
+    protected function isIdentifiableQuery(): bool
+    {
+        foreach ($this->wheres as $where) {
+            if ($where['column'] === $this->modelIdentifier) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -174,8 +184,9 @@ class CacheableQueryBuilder extends Builder {
      * @param mixed|null $identifier
      * @return bool
      */
-    public function forget(mixed $identifier = null): bool {
-        if(!$this->enabled) {
+    public function forget(mixed $identifier = null): bool
+    {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -183,16 +194,15 @@ class CacheableQueryBuilder extends Builder {
 
         //If tag-support, just flush all results
         $modelClasses = $this->getIdentifiableModelClasses($identifier);
-        if(Cache::getStore() instanceof TaggableStore) {
+        if (Cache::getStore() instanceof TaggableStore) {
             return Cache::tags($modelClasses)->flush();
-
         } else {
             //If not, forget based on the cached queries
-            foreach($modelClasses as $modelClass) {
+            foreach ($modelClasses as $modelClass) {
                 $modelCacheKey = $this->getModelCacheKey($modelClass);
                 $queries = Cache::get($modelCacheKey);
-                if(!empty($queries)) {
-                    foreach($queries as $query) {
+                if (! empty($queries)) {
+                    foreach ($queries as $query) {
                         Cache::forget($query);
                     }
 
@@ -209,11 +219,13 @@ class CacheableQueryBuilder extends Builder {
      *
      * @return string
      */
-    protected function getCacheKey(): string {
+    protected function getCacheKey(): string
+    {
         $sql = $this->toSql();
         $bindings = $this->getBindings();
-        if(!empty($bindings)) {
+        if (! empty($bindings)) {
             $bindings = Arr::join($this->getBindings(), '_');
+
             return $sql . '_' . $bindings;
         }
 
@@ -224,7 +236,8 @@ class CacheableQueryBuilder extends Builder {
      * @param string|null $modelClass
      * @return string
      */
-    protected function getModelCacheKey(string $modelClass = null): string {
+    protected function getModelCacheKey(string $modelClass = null): string
+    {
         return $this->prefix . '_' . $modelClass ?? $this->modelClass;
     }
 
@@ -233,12 +246,14 @@ class CacheableQueryBuilder extends Builder {
      * @param string $level
      * @return bool
      */
-    protected function log(string $message, string $level = 'debug') {
-        if($this->logLevel) {
+    protected function log(string $message, string $level = 'debug')
+    {
+        if ($this->logLevel) {
             Log::log($this->logLevel, "[Cacheable] {$message}");
         } else {
             Log::log($level, "[Cacheable] {$message}");
         }
+
         return true;
     }
 
@@ -246,8 +261,10 @@ class CacheableQueryBuilder extends Builder {
      * @param array $values
      * @return int
      */
-    public function update(array $values) {
+    public function update(array $values)
+    {
         $this->forget();
+
         return parent::update($values);
     }
 
@@ -255,8 +272,10 @@ class CacheableQueryBuilder extends Builder {
      * @param array $values
      * @return int
      */
-    public function updateFrom(array $values) {
+    public function updateFrom(array $values)
+    {
         $this->forget();
+
         return parent::updateFrom($values);
     }
 
@@ -264,8 +283,10 @@ class CacheableQueryBuilder extends Builder {
      * @param array $values
      * @return bool
      */
-    public function insert(array $values) {
+    public function insert(array $values)
+    {
         $this->forget();
+
         return parent::insert($values);
     }
 
@@ -274,8 +295,10 @@ class CacheableQueryBuilder extends Builder {
      * @param       $sequence
      * @return int
      */
-    public function insertGetId(array $values, $sequence = null) {
+    public function insertGetId(array $values, $sequence = null)
+    {
         $this->forget();
+
         return parent::insertGetId($values, $sequence);
     }
 
@@ -283,8 +306,10 @@ class CacheableQueryBuilder extends Builder {
      * @param array $values
      * @return int
      */
-    public function insertOrIgnore(array $values) {
+    public function insertOrIgnore(array $values)
+    {
         $this->forget();
+
         return parent::insertOrIgnore($values);
     }
 
@@ -293,8 +318,10 @@ class CacheableQueryBuilder extends Builder {
      * @param       $query
      * @return int
      */
-    public function insertUsing(array $columns, $query) {
+    public function insertUsing(array $columns, $query)
+    {
         $this->forget();
+
         return parent::insertUsing($columns, $query);
     }
 
@@ -304,8 +331,10 @@ class CacheableQueryBuilder extends Builder {
      * @param       $update
      * @return int
      */
-    public function upsert(array $values, $uniqueBy, $update = null) {
+    public function upsert(array $values, $uniqueBy, $update = null)
+    {
         $this->forget();
+
         return parent::upsert($values, $uniqueBy, $update);
     }
 
@@ -313,15 +342,18 @@ class CacheableQueryBuilder extends Builder {
      * @param $id
      * @return int
      */
-    public function delete($id = null) {
+    public function delete($id = null)
+    {
         $this->forget();
+
         return parent::delete($id);
     }
 
     /**
      * @return void
      */
-    public function truncate() {
+    public function truncate()
+    {
         $this->forget();
         parent::truncate();
     }
