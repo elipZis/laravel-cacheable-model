@@ -51,8 +51,8 @@ class CacheableQueryBuilder extends Builder
 
     /**
      * @param Connection $conn
-     * @param string     $modelClass
-     * @param array      $cacheableProperties
+     * @param string $modelClass
+     * @param array $cacheableProperties
      */
     public function __construct(Connection $conn, string $modelClass, array $cacheableProperties)
     {
@@ -87,7 +87,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function runSelect()
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return parent::runSelect();
         }
 
@@ -186,7 +186,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function forget(mixed $identifier = null): bool
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return false;
         }
 
@@ -201,7 +201,7 @@ class CacheableQueryBuilder extends Builder
             foreach ($modelClasses as $modelClass) {
                 $modelCacheKey = $this->getModelCacheKey($modelClass);
                 $queries = Cache::get($modelCacheKey);
-                if (! empty($queries)) {
+                if (!empty($queries)) {
                     foreach ($queries as $query) {
                         Cache::forget($query);
                     }
@@ -223,7 +223,7 @@ class CacheableQueryBuilder extends Builder
     {
         $sql = $this->toSql();
         $bindings = $this->getBindings();
-        if (! empty($bindings)) {
+        if (!empty($bindings)) {
             $bindings = Arr::join($this->getBindings(), '_');
 
             return $sql . '_' . $bindings;
@@ -238,7 +238,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function getModelCacheKey(string $modelClass = null): string
     {
-        return $this->prefix . '_' . $modelClass ?? $this->modelClass;
+        return $this->prefix . '_' . ($modelClass ?? $this->modelClass);
     }
 
     /**
