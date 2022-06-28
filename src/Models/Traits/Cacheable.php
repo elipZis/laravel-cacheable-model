@@ -6,7 +6,7 @@ use ElipZis\Cacheable\Database\Query\CacheableQueryBuilder;
 use Illuminate\Database\Connection;
 
 /**
- * If a model supports general repository caching
+ * Make a model support general query caching
  */
 trait Cacheable
 {

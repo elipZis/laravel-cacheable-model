@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
+ * Capture all select queries and decide if to cache or not.
  *
+ * Forget caches in case of altering statements.
  */
 class CacheableQueryBuilder extends Builder
 {
@@ -83,6 +85,8 @@ class CacheableQueryBuilder extends Builder
     }
 
     /**
+     * Pass our configuration to newly created queries
+     *
      * @return $this|CacheableQueryBuilder
      */
     public function newQuery()
@@ -149,6 +153,8 @@ class CacheableQueryBuilder extends Builder
     }
 
     /**
+     * Check if to cache against just the class or a specific identifiable e.g. id
+     *
      * @return string[]
      */
     protected function getIdentifiableModelClasses(mixed $value = null): array
@@ -281,6 +287,8 @@ class CacheableQueryBuilder extends Builder
     }
 
     /**
+     * Disable cache for this query
+     *
      * @return $this
      */
     public function withoutCache(): static
@@ -291,6 +299,8 @@ class CacheableQueryBuilder extends Builder
     }
 
     /**
+     * Enable logging for this query
+     *
      * @return $this
      */
     public function withLogging(): static
@@ -301,6 +311,8 @@ class CacheableQueryBuilder extends Builder
     }
 
     /**
+     * Change the ttl for this query
+     *
      * @param int $ttl
      * @return $this
      */
@@ -398,7 +410,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function delete($id = null)
     {
-        $this->forget();
+        $this->forget($id);
 
         return parent::delete($id);
     }
