@@ -15,8 +15,11 @@ trait Cacheable
      */
     protected function newBaseQueryBuilder()
     {
+        $conn = $this->getConnection();
         return new CacheableQueryBuilder(
-            $this->getConnection(),
+            $conn,
+            $conn->getQueryGrammar(),
+            $conn->getPostProcessor(),
             static::class,
             $this->getCacheableProperties()
         );
@@ -31,7 +34,7 @@ trait Cacheable
             'ttl' => 300,
             'prefix' => 'cacheable',
             'identifier' => 'id',
-            'logLevel' => 'error',
+            'logLevel' => 'debug',
         ];
     }
 

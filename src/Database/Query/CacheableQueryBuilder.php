@@ -5,6 +5,8 @@ namespace ElipZis\Cacheable\Database\Query;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\Grammars\Grammar;
+use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -20,29 +22,24 @@ class CacheableQueryBuilder extends Builder
     protected string $modelClass;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $modelIdentifier;
+    protected ?string $modelIdentifier;
 
     /**
      * @var int|null
      */
-    protected mixed $ttl;
+    protected ?int $ttl;
 
     /**
      * @var string|null
      */
-    protected mixed $prefix;
+    protected ?string $prefix;
 
     /**
      * @var string|null
      */
-    protected mixed $logLevel;
-
-    /**
-     * @var array
-     */
-    protected array $cacheableProperties;
+    protected ?string $logLevel;
 
     /**
      * @var bool
@@ -50,14 +47,25 @@ class CacheableQueryBuilder extends Builder
     protected bool $enabled = true;
 
     /**
+     * @var array
+     */
+    protected array $cacheableProperties;
+
+    /**
      * @param Connection $conn
-     * @param string $modelClass
+     * @param Grammar|null $grammar
+     * @param Processor|null $processor
+     * @param string|null $modelClass
      * @param array $cacheableProperties
      */
-    public function __construct(Connection $conn, string $modelClass, array $cacheableProperties)
+    public function __construct(Connection $conn,
+                                Grammar    $grammar = null,
+                                Processor  $processor = null,
+                                string     $modelClass = null,
+                                array      $cacheableProperties = [])
     {
-        parent::__construct($conn);
-        $this->modelClass = $modelClass;
+        parent::__construct($conn, $grammar, $processor);
+        $this->modelClass = $modelClass ?? static::class;
         $this->cacheableProperties = $cacheableProperties;
 
         //Prefill some members
@@ -65,6 +73,20 @@ class CacheableQueryBuilder extends Builder
         $this->ttl = $cacheableProperties['ttl'] ?? null;
         $this->prefix = $cacheableProperties['prefix'] ?? null;
         $this->logLevel = $cacheableProperties['logLevel'] ?? null;
+    }
+
+    /**
+     * @return $this|CacheableQueryBuilder
+     */
+    public function newQuery()
+    {
+        return new static(
+            $this->connection,
+            $this->grammar,
+            $this->processor,
+            $this->modelClass,
+            $this->cacheableProperties
+        );
     }
 
     /**
@@ -111,7 +133,7 @@ class CacheableQueryBuilder extends Builder
             $this->log("Using taggable store to cache value of {$cacheKey} for {$this->ttl} ttl");
             Cache::tags($modelClasses)->put($cacheKey, $retVal, $this->ttl);
         } else {
-            $this->log("Using cache to store value of {$cacheKey} for {$this->ttl} ttl");
+            $this->log("Using cache to store value of {$cacheKey} for {$this->ttl} ttl for " . implode(',', $modelClasses));
             Cache::put($cacheKey, $retVal, $this->ttl);
 
             //Cache the query if not, for purging purposes
@@ -149,12 +171,17 @@ class CacheableQueryBuilder extends Builder
     }
 
     /**
-     * @return mixed|null
+     * @param array|null $wheres
+     * @return mixed
      */
-    protected function getIdentifiableValue(): mixed
+    protected function getIdentifiableValue(array $wheres = null): mixed
     {
-        foreach ($this->wheres as $where) {
-            if ($where['column'] === $this->modelIdentifier) {
+        $wheres = $wheres ?? $this->wheres;
+        foreach ($wheres as $where) {
+            if (isset($where['type']) && $where['type'] === 'Nested') {
+                return $this->getIdentifiableValue($where['query']->wheres);
+            }
+            if (isset($where['column']) && $where['column'] === $this->modelIdentifier) {
                 return $where['value'];
             }
         }
@@ -165,12 +192,17 @@ class CacheableQueryBuilder extends Builder
     /**
      * Check if identifier query (id-driven)
      *
+     * @param array|null $wheres
      * @return bool
      */
-    protected function isIdentifiableQuery(): bool
+    protected function isIdentifiableQuery(array $wheres = null): bool
     {
-        foreach ($this->wheres as $where) {
-            if ($where['column'] === $this->modelIdentifier) {
+        $wheres = $wheres ?? $this->wheres;
+        foreach ($wheres as $where) {
+            if (isset($where['type']) && $where['type'] === 'Nested') {
+                return $this->isIdentifiableQuery($where['query']->wheres);
+            }
+            if (isset($where['column']) && $where['column'] === $this->modelIdentifier) {
                 return true;
             }
         }
@@ -355,6 +387,7 @@ class CacheableQueryBuilder extends Builder
     public function truncate()
     {
         $this->forget();
+
         parent::truncate();
     }
 }
