@@ -69,8 +69,7 @@ class CacheableQueryBuilder extends Builder
         Processor  $processor = null,
         string     $modelClass = null,
         array      $cacheableProperties = []
-    )
-    {
+    ) {
         parent::__construct($conn, $grammar, $processor);
         $this->modelClass = $modelClass ?? static::class;
         $this->cacheableProperties = $cacheableProperties;
