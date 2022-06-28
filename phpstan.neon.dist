@@ -9,4 +9,6 @@ parameters:
     checkOctaneCompatibility: true
     checkModelProperties: true
     checkMissingIterableValueType: false
+    ignoreErrors:
+        - "#^Unsafe usage of new static#"
 
