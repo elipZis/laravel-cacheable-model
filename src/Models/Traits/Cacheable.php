@@ -38,7 +38,7 @@ trait Cacheable
             'logging' => [
                 'enabled' => false,
                 'level' => 'debug',
-            ]
+            ],
         ];
     }
 
