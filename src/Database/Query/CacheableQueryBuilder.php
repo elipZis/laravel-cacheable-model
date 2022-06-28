@@ -37,6 +37,11 @@ class CacheableQueryBuilder extends Builder
     protected ?string $prefix;
 
     /**
+     * @var bool
+     */
+    protected bool $logEnabled = false;
+
+    /**
      * @var string|null
      */
     protected ?string $logLevel;
@@ -74,7 +79,8 @@ class CacheableQueryBuilder extends Builder
         $this->modelIdentifier = $cacheableProperties['identifier'] ?? null;
         $this->ttl = $cacheableProperties['ttl'] ?? null;
         $this->prefix = $cacheableProperties['prefix'] ?? null;
-        $this->logLevel = $cacheableProperties['logLevel'] ?? null;
+        $this->logEnabled = Arr::get($cacheableProperties, 'logging.enabled', false);
+        $this->logLevel = Arr::get($cacheableProperties, 'logging.level', null);
     }
 
     /**
@@ -92,16 +98,6 @@ class CacheableQueryBuilder extends Builder
     }
 
     /**
-     * @return $this
-     */
-    public function withoutCache(): static
-    {
-        $this->enabled = false;
-
-        return $this;
-    }
-
-    /**
      * Run the query as a "select" statement against the connection.
      *
      * Check the cache based on the query beforehand and return
@@ -111,7 +107,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function runSelect()
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return parent::runSelect();
         }
 
@@ -132,7 +128,7 @@ class CacheableQueryBuilder extends Builder
         $modelClasses = $this->getIdentifiableModelClasses($this->getIdentifiableValue());
         //Are tags supported? Makes life easier!
         if (Cache::getStore() instanceof TaggableStore) {
-            $this->log("Using taggable store to cache value of {$cacheKey} for {$this->ttl} ttl");
+            $this->log("Using taggable store to cache value of {$cacheKey} for {$this->ttl} ttl for " . implode(',', $modelClasses));
             Cache::tags($modelClasses)->put($cacheKey, $retVal, $this->ttl);
         } else {
             $this->log("Using cache to store value of {$cacheKey} for {$this->ttl} ttl for " . implode(',', $modelClasses));
@@ -199,17 +195,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function isIdentifiableQuery(array $wheres = null): bool
     {
-        $wheres = $wheres ?? $this->wheres;
-        foreach ($wheres as $where) {
-            if (isset($where['type']) && $where['type'] === 'Nested') {
-                return $this->isIdentifiableQuery($where['query']->wheres);
-            }
-            if (isset($where['column']) && $where['column'] === $this->modelIdentifier) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->getIdentifiableValue($wheres) !== null;
     }
 
     /**
@@ -220,7 +206,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function forget(mixed $identifier = null): bool
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return false;
         }
 
@@ -235,7 +221,7 @@ class CacheableQueryBuilder extends Builder
             foreach ($modelClasses as $modelClass) {
                 $modelCacheKey = $this->getModelCacheKey($modelClass);
                 $queries = Cache::get($modelCacheKey);
-                if (! empty($queries)) {
+                if (!empty($queries)) {
                     foreach ($queries as $query) {
                         Cache::forget($query);
                     }
@@ -257,7 +243,7 @@ class CacheableQueryBuilder extends Builder
     {
         $sql = $this->toSql();
         $bindings = $this->getBindings();
-        if (! empty($bindings)) {
+        if (!empty($bindings)) {
             $bindings = Arr::join($this->getBindings(), '_');
 
             return $sql . '_' . $bindings;
@@ -282,6 +268,10 @@ class CacheableQueryBuilder extends Builder
      */
     protected function log(string $message, string $level = 'debug')
     {
+        if (!$this->logEnabled) {
+            return false;
+        }
+
         if ($this->logLevel) {
             Log::log($this->logLevel, "[Cacheable] {$message}");
         } else {
@@ -289,6 +279,38 @@ class CacheableQueryBuilder extends Builder
         }
 
         return true;
+    }
+
+
+    /**
+     * @return $this
+     */
+    public function withoutCache(): static
+    {
+        $this->enabled = false;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function withLogging(): static
+    {
+        $this->logEnabled = true;
+
+        return $this;
+    }
+
+    /**
+     * @param int $ttl
+     * @return $this
+     */
+    public function withTtl(int $ttl): static
+    {
+        $this->ttl = $ttl;
+
+        return $this;
     }
 
     /**

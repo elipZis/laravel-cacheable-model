@@ -35,7 +35,10 @@ trait Cacheable
             'ttl' => 300,
             'prefix' => 'cacheable',
             'identifier' => 'id',
-            'logLevel' => 'debug',
+            'logging' => [
+                'enabled' => false,
+                'level' => 'debug',
+            ]
         ];
     }
 
