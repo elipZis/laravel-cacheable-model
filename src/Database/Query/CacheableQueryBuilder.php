@@ -58,11 +58,13 @@ class CacheableQueryBuilder extends Builder
      * @param string|null $modelClass
      * @param array $cacheableProperties
      */
-    public function __construct(Connection $conn,
-                                Grammar    $grammar = null,
-                                Processor  $processor = null,
-                                string     $modelClass = null,
-                                array      $cacheableProperties = [])
+    public function __construct(
+        Connection $conn,
+        Grammar    $grammar = null,
+        Processor  $processor = null,
+        string     $modelClass = null,
+        array      $cacheableProperties = []
+    )
     {
         parent::__construct($conn, $grammar, $processor);
         $this->modelClass = $modelClass ?? static::class;

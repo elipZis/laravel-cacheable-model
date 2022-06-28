@@ -16,6 +16,7 @@ trait Cacheable
     protected function newBaseQueryBuilder()
     {
         $conn = $this->getConnection();
+
         return new CacheableQueryBuilder(
             $conn,
             $conn->getQueryGrammar(),
