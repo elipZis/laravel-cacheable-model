@@ -109,7 +109,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function runSelect()
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return parent::runSelect();
         }
 
@@ -218,7 +218,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function forget(mixed $identifier = null): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -233,7 +233,7 @@ class CacheableQueryBuilder extends Builder
             foreach ($modelClasses as $modelClass) {
                 $modelCacheKey = $this->getModelCacheKey($modelClass);
                 $queries = Cache::get($modelCacheKey);
-                if (!empty($queries)) {
+                if (! empty($queries)) {
                     foreach ($queries as $query) {
                         Cache::forget($query);
                     }
@@ -255,7 +255,7 @@ class CacheableQueryBuilder extends Builder
     {
         $sql = $this->toSql();
         $bindings = $this->getBindings();
-        if (!empty($bindings)) {
+        if (! empty($bindings)) {
             $bindings = Arr::join($this->getBindings(), '_');
 
             return $sql . '_' . $bindings;
