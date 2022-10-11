@@ -71,8 +71,7 @@ class CacheableQueryBuilder extends Builder
         Processor  $processor = null,
         string     $modelClass = null,
         array      $cacheableProperties = []
-    )
-    {
+    ) {
         parent::__construct($conn, $grammar, $processor);
         $this->modelClass = $modelClass ?? static::class;
         $this->cacheableProperties = $cacheableProperties;
@@ -111,7 +110,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function runSelect()
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return parent::runSelect();
         }
 
@@ -212,7 +211,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function flushCache(mixed $identifier = null): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -227,7 +226,7 @@ class CacheableQueryBuilder extends Builder
             foreach ($modelClasses as $modelClass) {
                 $modelCacheKey = $this->getModelCacheKey($modelClass);
                 $queries = Cache::get($modelCacheKey);
-                if (!empty($queries)) {
+                if (! empty($queries)) {
                     foreach ($queries as $query) {
                         Cache::forget($query);
                     }
@@ -249,7 +248,7 @@ class CacheableQueryBuilder extends Builder
     {
         $sql = $this->toSql();
         $bindings = $this->getBindings();
-        if (!empty($bindings)) {
+        if (! empty($bindings)) {
             $bindings = Arr::join($this->getBindings(), '_');
 
             return $sql . '_' . $bindings;
@@ -274,7 +273,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function log(string $message, string $level = 'debug')
     {
-        if (!$this->logEnabled) {
+        if (! $this->logEnabled) {
             return false;
         }
 
