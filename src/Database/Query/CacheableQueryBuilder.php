@@ -71,7 +71,8 @@ class CacheableQueryBuilder extends Builder
         Processor  $processor = null,
         string     $modelClass = null,
         array      $cacheableProperties = []
-    ) {
+    )
+    {
         parent::__construct($conn, $grammar, $processor);
         $this->modelClass = $modelClass ?? static::class;
         $this->cacheableProperties = $cacheableProperties;
@@ -110,7 +111,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function runSelect()
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return parent::runSelect();
         }
 
@@ -209,9 +210,9 @@ class CacheableQueryBuilder extends Builder
      * @param mixed|null $identifier
      * @return bool
      */
-    public function forget(mixed $identifier = null): bool
+    public function flushCache(mixed $identifier = null): bool
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return false;
         }
 
@@ -226,7 +227,7 @@ class CacheableQueryBuilder extends Builder
             foreach ($modelClasses as $modelClass) {
                 $modelCacheKey = $this->getModelCacheKey($modelClass);
                 $queries = Cache::get($modelCacheKey);
-                if (! empty($queries)) {
+                if (!empty($queries)) {
                     foreach ($queries as $query) {
                         Cache::forget($query);
                     }
@@ -248,7 +249,7 @@ class CacheableQueryBuilder extends Builder
     {
         $sql = $this->toSql();
         $bindings = $this->getBindings();
-        if (! empty($bindings)) {
+        if (!empty($bindings)) {
             $bindings = Arr::join($this->getBindings(), '_');
 
             return $sql . '_' . $bindings;
@@ -273,7 +274,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function log(string $message, string $level = 'debug')
     {
-        if (! $this->logEnabled) {
+        if (!$this->logEnabled) {
             return false;
         }
 
@@ -329,7 +330,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function update(array $values)
     {
-        $this->forget();
+        $this->flushCache();
 
         return parent::update($values);
     }
@@ -340,7 +341,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function updateFrom(array $values)
     {
-        $this->forget();
+        $this->flushCache();
 
         return parent::updateFrom($values);
     }
@@ -351,7 +352,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function insert(array $values)
     {
-        $this->forget();
+        $this->flushCache();
 
         return parent::insert($values);
     }
@@ -363,7 +364,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function insertGetId(array $values, $sequence = null)
     {
-        $this->forget();
+        $this->flushCache();
 
         return parent::insertGetId($values, $sequence);
     }
@@ -374,7 +375,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function insertOrIgnore(array $values)
     {
-        $this->forget();
+        $this->flushCache();
 
         return parent::insertOrIgnore($values);
     }
@@ -386,7 +387,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function insertUsing(array $columns, $query)
     {
-        $this->forget();
+        $this->flushCache();
 
         return parent::insertUsing($columns, $query);
     }
@@ -399,7 +400,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function upsert(array $values, $uniqueBy, $update = null)
     {
-        $this->forget();
+        $this->flushCache();
 
         return parent::upsert($values, $uniqueBy, $update);
     }
@@ -410,7 +411,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function delete($id = null)
     {
-        $this->forget($id);
+        $this->flushCache($id);
 
         return parent::delete($id);
     }
@@ -420,7 +421,7 @@ class CacheableQueryBuilder extends Builder
      */
     public function truncate()
     {
-        $this->forget();
+        $this->flushCache();
 
         parent::truncate();
     }
