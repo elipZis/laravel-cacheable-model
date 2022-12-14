@@ -110,27 +110,29 @@ class CacheableQueryBuilder extends Builder
      */
     protected function runSelect()
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return parent::runSelect();
         }
 
         //Use the query as common cache key
         $cacheKey = $this->getCacheKey();
 
-        //If cached, return
-        if (Cache::has($cacheKey)) {
-            $this->log("Found cache entry for {$cacheKey}");
+        //Check if taggable store
+        $isTaggableStore = Cache::getStore() instanceof TaggableStore;
+        //And create optional identifiers
+        $modelClasses = $isTaggableStore ? $this->getIdentifiableModelClasses($this->getIdentifiableValue()) : [];
 
-            return Cache::get($cacheKey);
+        //If cached, return
+        if (($isTaggableStore && Cache::tags($modelClasses)->has($cacheKey)) || Cache::has($cacheKey)) {
+            $this->log("Found cache entry for '{$cacheKey}'");
+            return $isTaggableStore ? Cache::tags($modelClasses)->get($cacheKey) : Cache::get($cacheKey);
         }
 
         //If not, run normally -> this is what to cache and return
         $retVal = parent::runSelect();
 
-        //Cache before return by class (and optional identifiers)
-        $modelClasses = $this->getIdentifiableModelClasses($this->getIdentifiableValue());
         //Are tags supported? Makes life easier!
-        if (Cache::getStore() instanceof TaggableStore) {
+        if ($isTaggableStore) {
             $this->log("Using taggable store to cache value of {$cacheKey} for {$this->ttl} ttl for " . implode(',', $modelClasses));
             Cache::tags($modelClasses)->put($cacheKey, $retVal, $this->ttl);
         } else {
@@ -140,10 +142,7 @@ class CacheableQueryBuilder extends Builder
             //Cache the query if not, for purging purposes
             foreach ($modelClasses as $modelClass) {
                 $modelCacheKey = $this->getModelCacheKey($modelClass);
-                $queries = [];
-                if (Cache::has($modelCacheKey)) {
-                    $queries = Cache::get($modelCacheKey);
-                }
+                $queries = Cache::get($modelCacheKey, []);
                 $queries[] = $cacheKey;
                 Cache::put($modelCacheKey, $queries);
             }
