@@ -110,7 +110,7 @@ class CacheableQueryBuilder extends Builder
      */
     protected function runSelect()
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return parent::runSelect();
         }
 
@@ -125,6 +125,7 @@ class CacheableQueryBuilder extends Builder
         //If cached, return
         if (($isTaggableStore && Cache::tags($modelClasses)->has($cacheKey)) || Cache::has($cacheKey)) {
             $this->log("Found cache entry for '{$cacheKey}'");
+
             return $isTaggableStore ? Cache::tags($modelClasses)->get($cacheKey) : Cache::get($cacheKey);
         }
 
