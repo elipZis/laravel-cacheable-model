@@ -119,8 +119,8 @@ class CacheableQueryBuilder extends Builder
 
         //Check if taggable store
         $isTaggableStore = Cache::getStore() instanceof TaggableStore;
-        //And create optional identifiers
-        $modelClasses = $isTaggableStore ? $this->getIdentifiableModelClasses($this->getIdentifiableValue()) : [];
+        //and create additional identifiers
+        $modelClasses = $this->getIdentifiableModelClasses($this->getIdentifiableValue());
 
         //If cached, return
         if (($isTaggableStore && Cache::tags($modelClasses)->has($cacheKey)) || Cache::has($cacheKey)) {
