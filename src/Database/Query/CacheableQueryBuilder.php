@@ -185,7 +185,7 @@ class CacheableQueryBuilder extends Builder
                 return $this->getIdentifiableValue($where['query']->wheres);
             }
             if (isset($where['column']) && $where['column'] === $this->modelIdentifier) {
-                return $where['value'];
+                return $where['value'] ?? $where['values'];
             }
         }
 
