@@ -5,13 +5,14 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/elipzis/laravel-cacheable-model/Check%20&%20fix%20styling?label=code%20style)](https://github.com/elipzis/laravel-cacheable-model/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/elipzis/laravel-cacheable-model.svg?style=flat-square)](https://packagist.org/packages/elipzis/laravel-cacheable-model)
 
-Easy select-query caching for your models!
+Easy and automatic select-query caching for your models!
 
-* Get cached query results and reduce your database load
+* Get cached query results and reduce your database load automatically
 * Configure TTL, prefixes, unique-queries etc.
+* No manual cache calls needed
 * Automated cache flush in case of updates, inserts or deletions
 
-Make any model cachable by adding the trait
+You can make any Eloquent model cacheable by adding the trait
 
 ```php
 ...
@@ -36,7 +37,7 @@ composer require elipzis/laravel-cacheable-model
 
 ## Usage
 
-Make your model cacheable
+Make your model cacheable by adding the trait:
 
 ```php
 ...
@@ -63,6 +64,10 @@ YourModel::query()->where('field', 'test')->first();
 YourModel::query()->insert([...]);
 ```
 
+The package overrides the QueryBuilder and scans for the same queries to capture and return the cached values.
+
+You do not need to do anything else but just use your model as you would and leverage the power of cached entries! 
+
 ### Configuration
 
 The following configuration can be overridden per model
@@ -70,10 +75,13 @@ The following configuration can be overridden per model
 ```php
 public function getCacheableProperties(): array {
     return [
-        'ttl'        => 300,
-        'prefix'     => 'cacheable',
+        'ttl' => 300,
+        'prefix' => 'cacheable',
         'identifier' => 'id',
-        'logLevel'   => 'error'
+        'logging' => [
+            'enabled' => false,
+            'level' => 'debug',
+        ],
     ];
 }
 ```
@@ -85,6 +93,25 @@ Depending on your cache and database performance, you might like to retrieve a q
 ```php
 YourModel::query()->withoutCache()->get();
 ```
+
+### Flush cache
+
+If your data is updated outside of this package, you can flush it yourself by calling:
+
+```php
+YourModel::query()->flushCache();
+```
+
+### Note on using caching
+
+This package overrides the native QueryBuilder and is capturing every database query, therefore it imposes a load and
+performance burden.
+
+If you use caching intensively on a model, this package and its use can help. If an entity is permanently changing, it
+won't make sense to make it `Cacheable`.
+
+It is recommended to only make models `Cacheable` which have a reasonable caching time in your system. Do not use the
+trait on any other or all models out of the box, but think about where it makes sense.
 
 ## Testing
 
