@@ -2,9 +2,9 @@ name: run-tests
 
 on:
   push:
-    branches: [main]
+    branches: [main,test]
   pull_request:
-    branches: [main]
+    branches: [main,test]
 
 jobs:
   test:
@@ -25,6 +25,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.1.0
+        with: 
+          ref: 'test'
+          submodules: 'true'
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -44,4 +47,4 @@ jobs:
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Execute tests
-        run: vendor/bin/pest
+        run: vendor/bin/phpunit
