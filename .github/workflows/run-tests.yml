@@ -5,6 +5,9 @@ on:
     branches: [main,test]
   pull_request:
     branches: [main,test]
+    
+env:
+  COMPOSER: composer.testing.json
 
 jobs:
   test:
@@ -43,7 +46,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer config --file=composer.testing.json
           composer install --prefer-dist --no-interaction
 
       - name: Execute tests
