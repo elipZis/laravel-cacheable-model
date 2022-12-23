@@ -1,0 +1,4 @@
+[submodule "laravel-cacheable-model"]
+	path = laravel-cacheable-model
+	url = https://github.com/elipZis/laravel-cacheable-model
+	branch = main
