@@ -1,4 +1,4 @@
-# Automatically cached Eloquent models from queries for your Laravel app
+# Automatically cache Laravel Eloquent models by queries
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/elipzis/laravel-cacheable-model.svg?style=flat-square)](https://packagist.org/packages/elipzis/laravel-cacheable-model)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/elipzis/laravel-cacheable-model/run-tests.yml?branch=main)](https://github.com/elipzis/laravel-cacheable-model/actions?query=workflow%3Arun-tests+branch%3Amain)
