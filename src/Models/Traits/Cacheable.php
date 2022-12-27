@@ -37,7 +37,7 @@ trait Cacheable
             'identifier' => config('cacheable.identifier', 'id'),
             'logging' => [
                 'enabled' => config('cacheable.logging.enabled', false),
-                'level' => config('cacheable.logging.level', 'debug',),
+                'level' => config('cacheable.logging.level', 'debug', ),
             ],
         ];
     }
