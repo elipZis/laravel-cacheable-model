@@ -35,6 +35,31 @@ You can install the package via composer:
 composer require elipzis/laravel-cacheable-model
 ```
 
+You can publish the config file with:
+
+```bash
+php artisan vendor:publish --tag="cacheable-model-config"
+```
+
+This is the contents of the published config file:
+
+```php
+    //Default values for the Cacheable trait - Can be overridden per model
+    return [
+        //How long should cache last in general?
+        'ttl' => 300,
+        //By what should cache entries be prefixed?
+        'prefix' => 'cacheable',
+        //What is the identifying, unique column name?
+        'identifier' => 'id',
+        //Do you need logging?
+        'logging' => [
+            'enabled' => false,
+            'level' => 'debug',
+        ],
+    ];
+```
+
 ## Usage
 
 Make your model cacheable by adding the trait:

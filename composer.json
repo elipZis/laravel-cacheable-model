@@ -1,6 +1,6 @@
 {
     "name": "elipzis/laravel-cacheable-model",
-    "description": "Query-based cacheable models on-the-fly for your Laravel app",
+    "description": "Automatic query-based model cache for your Laravel app",
     "keywords": [
         "elipZis",
         "laravel",
@@ -22,8 +22,8 @@
         }
     ],
     "require": {
-        "php": "^8.0|^8.1",
-        "spatie/laravel-package-tools": "^1.9.2",
+        "php": "^8.0",
+        "spatie/laravel-package-tools": "^1.13",
         "illuminate/contracts": "^9.0"
     },
     "require-dev": {

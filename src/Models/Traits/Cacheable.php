@@ -32,12 +32,12 @@ trait Cacheable
     public function getCacheableProperties(): array
     {
         return [
-            'ttl' => 300,
-            'prefix' => 'cacheable',
-            'identifier' => 'id',
+            'ttl' => config('cacheable.ttl', 300),
+            'prefix' => config('cacheable.prefix', 'cacheable'),
+            'identifier' => config('cacheable.identifier', 'id'),
             'logging' => [
-                'enabled' => false,
-                'level' => 'debug',
+                'enabled' => config('cacheable.logging.enabled', false),
+                'level' => config('cacheable.logging.level', 'debug',),
             ],
         ];
     }
