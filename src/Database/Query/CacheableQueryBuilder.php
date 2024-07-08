@@ -163,9 +163,15 @@ class CacheableQueryBuilder extends Builder
         if ($value) {
             if (is_array($value)) {
                 foreach ($value as $v) {
+                    if ($v instanceof Expression) {
+                        $v = $v->getValue($this->getGrammar());
+                    }
                     $retVals[] = "{$this->modelClass}#{$v}";
                 }
             } else {
+                if ($value instanceof Expression) {
+                    $value = $value->getValue($this->getGrammar());
+                }
                 $retVals[] = "{$this->modelClass}#{$value}";
             }
         }
