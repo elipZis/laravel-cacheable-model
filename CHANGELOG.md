@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.1 - 2024-07-09
+
+### What's Changed
+
+* fix(CacheableQueryBuilder): fixed bug when query has whereIn('id', Expression) by @kingyyy in https://github.com/elipZis/laravel-cacheable-model/pull/35
+
+### New Contributors
+
+* @kingyyy made their first contribution in https://github.com/elipZis/laravel-cacheable-model/pull/35
+
+### Chore
+
+* build(deps): Bump actions/checkout from 4.1.1 to 4.1.2 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/26
+* build(deps): Bump ramsey/composer-install from 2 to 3 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/28
+* build(deps): Bump dependabot/fetch-metadata from 1.6.0 to 2.0.0 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/27
+* build(deps): Bump actions/checkout from 4.1.2 to 4.1.3 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/29
+* build(deps): Bump actions/checkout from 4.1.3 to 4.1.4 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/30
+* build(deps): Bump dependabot/fetch-metadata from 2.0.0 to 2.1.0 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/31
+* build(deps): Bump actions/checkout from 4.1.4 to 4.1.5 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/32
+* build(deps): Bump actions/checkout from 4.1.5 to 4.1.6 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/33
+* build(deps): Bump actions/checkout from 4.1.6 to 4.1.7 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/34
+* build(deps): Bump dependabot/fetch-metadata from 2.1.0 to 2.2.0 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/36
+
+**Full Changelog**: https://github.com/elipZis/laravel-cacheable-model/compare/v0.4.0...v0.4.1
+
 ## 0.4.0 - 2024-03-22
 
 Bump to Laravel 11 and up to PHP 8.3
