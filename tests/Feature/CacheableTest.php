@@ -43,6 +43,27 @@ class CacheableTest extends TestCase
     /**
      * @return void
      */
+    public function test_cacheable_within_subquery_is_working()
+    {
+        $user = User::query()->whereIn('id', User::query()->select('id'))->first();
+        $username = $user->name;
+        $this->assertIsString($username);
+
+        $user->name = 'Testing';
+        $userFresh = User::query()->first();
+        $this->assertEquals('Testing', $user->name);
+        $this->assertNotEquals($username, $user->name);
+        $this->assertNotEquals($userFresh->name, $user->name);
+
+        $this->assertTrue($user->save());
+        $userFresh = User::query()->first();
+        $this->assertNotEquals($username, $userFresh->name);
+        $this->assertEquals('Testing', $userFresh->name);
+    }
+
+    /**
+     * @return void
+     */
     public function test_without_cache_is_working()
     {
         $user = User::query()->first();
