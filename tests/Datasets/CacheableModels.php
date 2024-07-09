@@ -10,8 +10,8 @@ dataset('model', [
                 'key' => 'key',
                 'value' => 'value',
             ]);
-        }
-    ]
+        },
+    ],
 ]);
 
 dataset('models', [
@@ -21,7 +21,7 @@ dataset('models', [
                 'key' => 'key1',
                 'value' => 'value1',
             ]);
-        }
+        },
     ],
     [
         function () {
@@ -29,6 +29,6 @@ dataset('models', [
                 'key' => 'key2',
                 'value' => 'value2',
             ]);
-        }
-    ]
+        },
+    ],
 ]);

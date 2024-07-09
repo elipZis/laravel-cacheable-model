@@ -44,7 +44,7 @@ test('update model and have cache flushed', function (CacheableModel $model) {
     expect(Cache::tags([CacheableModel::class])->has("select * from \"cacheable_models\" where \"key\" = ? limit 1_key"))->toBeTrue();
 
     $cacheModel->update([
-        'key' => 'anotherkey'
+        'key' => 'anotherkey',
     ]);
     expect(Cache::tags([CacheableModel::class])->has("select * from \"cacheable_models\" where \"key\" = ? limit 1_key"))->toBeFalse();
 })->with('model');
