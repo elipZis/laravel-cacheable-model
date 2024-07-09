@@ -16,6 +16,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
+        dependency-version: [prefer-dist]
         php: [8.2, 8.3]
         laravel: [10.*, 11.*]
         include:
@@ -47,7 +48,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer install --no-scripts --no-interaction --no-suggest
+          composer install --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
       - name: Execute tests
-        run: vendor/bin/pest
+        run: vendor/bin/phpunit
