@@ -5,7 +5,7 @@ on:
     branches: [main,test]
   pull_request:
     branches: [main,test]
-    
+
 env:
   COMPOSER: composer.testing.json
 
@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
-        with: 
+        with:
           ref: 'test'
           submodules: 'true'
 
@@ -51,4 +51,4 @@ jobs:
           composer install --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
       - name: Execute tests
-        run: vendor/bin/phpunit
+        run: vendor/bin/pest
