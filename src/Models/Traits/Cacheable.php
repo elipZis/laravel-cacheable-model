@@ -36,6 +36,7 @@ trait Cacheable
             'prefix' => config('cacheable.prefix', 'cacheable'),
             'identifier' => config('cacheable.identifier', 'id'),
             'logging' => [
+                'channel' => config('cacheable.logging.channel', 'default'),
                 'enabled' => config('cacheable.logging.enabled', false),
                 'level' => config('cacheable.logging.level', 'debug', ),
             ],

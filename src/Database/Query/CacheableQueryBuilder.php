@@ -2,15 +2,15 @@
 
 namespace ElipZis\Cacheable\Database\Query;
 
+use Illuminate\Support\Arr;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Capture all select queries and decide if to cache or not.
@@ -38,6 +38,11 @@ class CacheableQueryBuilder extends Builder
      * @var string|null
      */
     protected ?string $prefix;
+
+    /**
+     * @var string|null
+     */
+    protected ?string $logChannel;
 
     /**
      * @var bool
@@ -81,6 +86,7 @@ class CacheableQueryBuilder extends Builder
         $this->modelIdentifier = $cacheableProperties['identifier'] ?? null;
         $this->ttl = $cacheableProperties['ttl'] ?? null;
         $this->prefix = $cacheableProperties['prefix'] ?? null;
+        $this->logChannel = Arr::get($cacheableProperties, 'logging.channel', null);
         $this->logEnabled = Arr::get($cacheableProperties, 'logging.enabled', false);
         $this->logLevel = Arr::get($cacheableProperties, 'logging.level', null);
     }
@@ -284,11 +290,24 @@ class CacheableQueryBuilder extends Builder
             return false;
         }
 
-        if ($this->logLevel) {
-            Log::log($this->logLevel, "[Cacheable] {$message}");
-        } else {
-            Log::log($level, "[Cacheable] {$message}");
+        // Handle dynamic log level and log channel, so we can change it on the fly
+        // for example, if log channel is set to 'some_channel', it will log to 'some_channel' channel
+        // if log channel is set to 'default', it will log to the default channel
+        if ($this->logChannel == null || $this->logChannel == 'default') {
+            $this->logChannel = Log::getDefaultDriver();
         }
+
+        // Check if the log channel exists on the driver list
+        if (! in_array($this->logChannel, array_keys(config('logging.channels')))) {
+            Log::log('error', "[Cacheable] Log channel '{$this->logChannel}' does not exist, using default driver instead.");
+            $this->logChannel = Log::getDefaultDriver();
+        }
+
+        // Check if log level is set, if not, use the default level
+        $this->logLevel = $this->logLevel ?? $level;
+
+        // Log it to the channel
+        Log::channel($this->logChannel)->log($this->logLevel, "[Cacheable] {$message}");
 
         return true;
     }

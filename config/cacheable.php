@@ -10,6 +10,7 @@ return [
     'identifier' => 'id',
     //Do you need logging?
     'logging' => [
+        'channel' => 'default', //Which channel should be used?
         'enabled' => false,
         'level' => 'debug',
     ],
