@@ -40,9 +40,9 @@ class CacheableQueryBuilder extends Builder
     protected ?string $prefix;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected string $logChannel;
+    protected ?string $logChannel;
 
     /**
      * @var bool
@@ -86,12 +86,13 @@ class CacheableQueryBuilder extends Builder
         $this->modelIdentifier = $cacheableProperties['identifier'] ?? null;
         $this->ttl = $cacheableProperties['ttl'] ?? null;
         $this->prefix = $cacheableProperties['prefix'] ?? null;
-        $this->logChannel = Arr::get($cacheableProperties, 'logging.channel', Log::getDefaultDriver());
+        $this->logChannel = Arr::get($cacheableProperties, 'logging.channel', null);
         $this->logEnabled = Arr::get($cacheableProperties, 'logging.enabled', false);
         $this->logLevel = Arr::get($cacheableProperties, 'logging.level', 'debug');
 
-        if ($this->logChannel == 'default') $this->logChannel = Log::getDefaultDriver();
-        elseif (! in_array($this->logChannel, array_keys(config('logging.channels')))) {
+        if ($this->logChannel == null || $this->logChannel == 'default') {
+            $this->logChannel = Log::getDefaultDriver();
+        } elseif (! in_array($this->logChannel, array_keys(config('logging.channels')))) {
             Log::log('error', "[Cacheable] Log channel '{$this->logChannel}' does not exist, using default driver instead.");
             $this->logChannel = Log::getDefaultDriver();
         }
