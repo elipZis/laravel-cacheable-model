@@ -52,7 +52,7 @@ class CacheableQueryBuilder extends Builder
     /**
      * @var string
      */
-    protected string $logLevel;
+    protected ?string $logLevel;
 
     /**
      * @var bool
@@ -88,9 +88,9 @@ class CacheableQueryBuilder extends Builder
         $this->prefix = $cacheableProperties['prefix'] ?? null;
         $this->logChannel = Arr::get($cacheableProperties, 'logging.channel', null);
         $this->logEnabled = Arr::get($cacheableProperties, 'logging.enabled', false);
-        $this->logLevel = Arr::get($cacheableProperties, 'logging.level', 'debug');
+        $this->logLevel = Arr::get($cacheableProperties, 'logging.level', null);
 
-        if ($this->logChannel == null || $this->logChannel == 'default') {
+        if ($this->logChannel == null) {
             $this->logChannel = Log::getDefaultDriver();
         } elseif (! in_array($this->logChannel, array_keys(config('logging.channels')))) {
             Log::log('error', "[Cacheable] Log channel '{$this->logChannel}' does not exist, using default driver instead.");
@@ -291,14 +291,17 @@ class CacheableQueryBuilder extends Builder
      * @param string $level
      * @return bool
      */
-    protected function log(string $message): bool
+    protected function log(string $message, string $level = 'debug'): bool
     {
         if (! $this->logEnabled) {
             return false;
         }
 
-        // Log it to the channel
-        Log::channel($this->logChannel)->log($this->logLevel, "[Cacheable] {$message}");
+        if ($this->logLevel) {
+            Log::channel($this->logChannel)->log($this->logLevel, "[Cacheable] {$message}");
+        } else {
+            Log::channel($this->logChannel)->log($level, "[Cacheable] {$message}");
+        }
 
         return true;
     }
