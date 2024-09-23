@@ -54,6 +54,7 @@ This is the contents of the published config file:
         'identifier' => 'id',
         //Do you need logging?
         'logging' => [
+            'channel' => null, //Which channel should be used?
             'enabled' => false,
             'level' => 'debug',
         ],
@@ -104,6 +105,7 @@ public function getCacheableProperties(): array {
         'prefix' => 'cacheable',
         'identifier' => 'id',
         'logging' => [
+            'channel' => 'anotherChannel',
             'enabled' => false,
             'level' => 'debug',
         ],

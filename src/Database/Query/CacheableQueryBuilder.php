@@ -2,15 +2,15 @@
 
 namespace ElipZis\Cacheable\Database\Query;
 
+use Illuminate\Support\Arr;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Capture all select queries and decide if to cache or not.
@@ -40,12 +40,17 @@ class CacheableQueryBuilder extends Builder
     protected ?string $prefix;
 
     /**
+     * @var string|null
+     */
+    protected ?string $logChannel;
+
+    /**
      * @var bool
      */
     protected bool $logEnabled = false;
 
     /**
-     * @var string|null
+     * @var string
      */
     protected ?string $logLevel;
 
@@ -81,8 +86,16 @@ class CacheableQueryBuilder extends Builder
         $this->modelIdentifier = $cacheableProperties['identifier'] ?? null;
         $this->ttl = $cacheableProperties['ttl'] ?? null;
         $this->prefix = $cacheableProperties['prefix'] ?? null;
+        $this->logChannel = Arr::get($cacheableProperties, 'logging.channel', null);
         $this->logEnabled = Arr::get($cacheableProperties, 'logging.enabled', false);
         $this->logLevel = Arr::get($cacheableProperties, 'logging.level', null);
+
+        if ($this->logChannel == null) {
+            $this->logChannel = Log::getDefaultDriver();
+        } elseif (! in_array($this->logChannel, array_keys(config('logging.channels')))) {
+            Log::log('error', "[Cacheable] Log channel '{$this->logChannel}' does not exist, using default driver instead.");
+            $this->logChannel = Log::getDefaultDriver();
+        }
     }
 
     /**
@@ -278,16 +291,16 @@ class CacheableQueryBuilder extends Builder
      * @param string $level
      * @return bool
      */
-    protected function log(string $message, string $level = 'debug')
+    protected function log(string $message, string $level = 'debug'): bool
     {
         if (! $this->logEnabled) {
             return false;
         }
 
         if ($this->logLevel) {
-            Log::log($this->logLevel, "[Cacheable] {$message}");
+            Log::channel($this->logChannel)->log($this->logLevel, "[Cacheable] {$message}");
         } else {
-            Log::log($level, "[Cacheable] {$message}");
+            Log::channel($this->logChannel)->log($level, "[Cacheable] {$message}");
         }
 
         return true;
