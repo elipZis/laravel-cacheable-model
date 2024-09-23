@@ -2,15 +2,15 @@
 
 namespace ElipZis\Cacheable\Database\Query;
 
-use Illuminate\Support\Arr;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Connection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Capture all select queries and decide if to cache or not.
