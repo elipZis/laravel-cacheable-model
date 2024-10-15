@@ -136,6 +136,11 @@ class CacheableQueryBuilder extends Builder
         //and create additional identifiers
         $modelClasses = $this->getIdentifiableModelClasses($this->getIdentifiableValue());
 
+        // clear expired cached queries in tagged cache
+        if ($isTaggableStore) {
+            Cache::tags($modelClasses)->flushStale();
+        }
+        
         //If cached, return
         if (($isTaggableStore && Cache::tags($modelClasses)->has($cacheKey)) || Cache::has($cacheKey)) {
             $this->log("Found cache entry for '{$cacheKey}'");
