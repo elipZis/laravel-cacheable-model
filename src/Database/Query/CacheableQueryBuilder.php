@@ -2,6 +2,7 @@
 
 namespace ElipZis\Cacheable\Database\Query;
 
+use Illuminate\Cache\RedisTaggedCache;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
@@ -135,6 +136,11 @@ class CacheableQueryBuilder extends Builder
         $isTaggableStore = Cache::getStore() instanceof TaggableStore;
         //and create additional identifiers
         $modelClasses = $this->getIdentifiableModelClasses($this->getIdentifiableValue());
+
+        // clear expired cached queries in tagged cache
+        if ($isTaggableStore && Cache::tags($modelClasses) instanceof RedisTaggedCache) {
+            Cache::tags($modelClasses)->flushStale();
+        }
 
         //If cached, return
         if (($isTaggableStore && Cache::tags($modelClasses)->has($cacheKey)) || Cache::has($cacheKey)) {
