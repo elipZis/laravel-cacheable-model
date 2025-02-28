@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.0 - 2025-02-28
+
+### What's Changed
+
+* Bumped PHP (8.4) and Laravel (12) by one version (current and last supported)
+* Add support for dynamic log channel by @Sleepy4k in https://github.com/elipZis/laravel-cacheable-model/pull/37
+* build(deps): Bump actions/checkout from 4.1.7 to 4.2.0 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/38
+* build(deps): Bump actions/checkout from 4.2.0 to 4.2.1 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/39
+* fix(CacheableQueryBuilder): remove expired items from tagged cache by @kingyyy in https://github.com/elipZis/laravel-cacheable-model/pull/40
+* build(deps): Bump actions/checkout from 4.2.1 to 4.2.2 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/41
+* build(deps): Bump dependabot/fetch-metadata from 2.2.0 to 2.3.0 by @dependabot in https://github.com/elipZis/laravel-cacheable-model/pull/42
+
+### New Contributors
+
+* @Sleepy4k made their first contribution in https://github.com/elipZis/laravel-cacheable-model/pull/37
+
+**Full Changelog**: https://github.com/elipZis/laravel-cacheable-model/compare/v0.4.1...v0.5.0
+
 ## 0.4.1 - 2024-07-09
 
 ### What's Changed
