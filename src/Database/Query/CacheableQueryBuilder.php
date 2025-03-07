@@ -175,10 +175,10 @@ class CacheableQueryBuilder extends Builder
     /**
      * Check if to cache against just the class or a specific identifiable e.g. id
      *
-     * @param mixed $value
+     * @param mixed|null $value
      * @return string[]
      */
-    protected function getIdentifiableModelClasses($value = null): array
+    protected function getIdentifiableModelClasses(mixed $value = null): array
     {
         $retVals = [$this->modelClass];
         if ($value) {
@@ -225,7 +225,7 @@ class CacheableQueryBuilder extends Builder
      * @param array|null $wheres
      * @return bool
      */
-    protected function isIdentifiableQuery(array $wheres = null): bool
+    protected function isIdentifiableQuery(?array $wheres = null): bool
     {
         return $this->getIdentifiableValue($wheres) !== null;
     }
