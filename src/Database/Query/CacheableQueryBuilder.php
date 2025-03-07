@@ -73,11 +73,11 @@ class CacheableQueryBuilder extends Builder
      * @param array $cacheableProperties
      */
     public function __construct(
-        Connection $conn,
+        Connection  $conn,
         ?Grammar    $grammar = null,
         ?Processor  $processor = null,
         ?string     $modelClass = null,
-        array      $cacheableProperties = []
+        array       $cacheableProperties = []
     ) {
         parent::__construct($conn, $grammar, $processor);
         $this->modelClass = $modelClass ?? static::class;
@@ -175,9 +175,10 @@ class CacheableQueryBuilder extends Builder
     /**
      * Check if to cache against just the class or a specific identifiable e.g. id
      *
+     * @param mixed $value
      * @return string[]
      */
-    protected function getIdentifiableModelClasses(?mixed $value = null): array
+    protected function getIdentifiableModelClasses($value = null): array
     {
         $retVals = [$this->modelClass];
         if ($value) {
