@@ -74,9 +74,9 @@ class CacheableQueryBuilder extends Builder
      */
     public function __construct(
         Connection $conn,
-        Grammar    $grammar = null,
-        Processor  $processor = null,
-        string     $modelClass = null,
+        ?Grammar    $grammar = null,
+        ?Processor  $processor = null,
+        ?string     $modelClass = null,
         array      $cacheableProperties = []
     ) {
         parent::__construct($conn, $grammar, $processor);
@@ -177,7 +177,7 @@ class CacheableQueryBuilder extends Builder
      *
      * @return string[]
      */
-    protected function getIdentifiableModelClasses(mixed $value = null): array
+    protected function getIdentifiableModelClasses(?mixed $value = null): array
     {
         $retVals = [$this->modelClass];
         if ($value) {
@@ -203,7 +203,7 @@ class CacheableQueryBuilder extends Builder
      * @param array|null $wheres
      * @return mixed
      */
-    protected function getIdentifiableValue(array $wheres = null): mixed
+    protected function getIdentifiableValue(?array $wheres = null): mixed
     {
         $wheres = $wheres ?? $this->wheres;
         foreach ($wheres as $where) {
@@ -287,7 +287,7 @@ class CacheableQueryBuilder extends Builder
      * @param string|null $modelClass
      * @return string
      */
-    protected function getModelCacheKey(string $modelClass = null): string
+    protected function getModelCacheKey(?string $modelClass = null): string
     {
         return $this->prefix . '_' . ($modelClass ?? $this->modelClass);
     }
