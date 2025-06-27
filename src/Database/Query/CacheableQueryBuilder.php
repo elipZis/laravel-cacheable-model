@@ -97,6 +97,11 @@ class CacheableQueryBuilder extends Builder
             Log::log('error', "[Cacheable] Log channel '{$this->logChannel}' does not exist, using default driver instead.");
             $this->logChannel = Log::getDefaultDriver();
         }
+        
+        if ($this->ttl === 0) {
+            $this->enabled = false;
+            $this->log("TTL is set to 'zero'; caching is disabled");
+        }
     }
 
     /**
