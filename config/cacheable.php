@@ -3,6 +3,7 @@
 //Default values for the Cacheable trait - Can be overridden per model
 return [
     //How long should cache last in general?
+    //Set TTL to 0 for disable caching (ex. config('app.debug') ? 0 : 300)
     'ttl' => 300,
     //By what should cache entries be prefixed?
     'prefix' => 'cacheable',
