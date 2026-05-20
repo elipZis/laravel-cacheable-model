@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.6.0 - 2026-05-20
+
+### What's Changed
+
+* Handle Undefined array key "values" when using whereNull by @lddtime in https://github.com/elipZis/laravel-cacheable-model/pull/56
+* feat: bump laravel 13 and php 8.5 by @nea in https://github.com/elipZis/laravel-cacheable-model/pull/57
+
+### New Contributors
+
+* @lddtime made their first contribution in https://github.com/elipZis/laravel-cacheable-model/pull/56
+
+**Full Changelog**: https://github.com/elipZis/laravel-cacheable-model/compare/v0.5.1...v0.6.0
+
 ## 0.5.1 - 2025-03-07
 
 fix: deprecations because of implicit nullable parameters
